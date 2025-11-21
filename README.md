@@ -13,4 +13,13 @@ This is a simple Flask application that visualizes Black Publications in the Uni
       
 
 # How to Run:
+Activate your virtual environment:
 
+	python3 -m venv venv
+____________________________________
+	source venv/bin/activate
+
+
+Install Flask via VSCode Terminal:
+
+	pip install -r requirements.txt
