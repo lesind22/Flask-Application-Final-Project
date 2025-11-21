@@ -5,10 +5,12 @@ This is a simple Flask application that visualizes Black Publications in the Uni
 
 # What This App Does: 
   - Reads data from the Black_Publications.csv
-  - Displays Three Interactive Visualizations:
-      U.S. Map of the United States with popup boxes
-      Black Publications search bar
-      Sildebar for Black Publications years
+  - Displays Four Interactive Visualizations:
+    - U.S. Map of the United States with popup boxes
+    - Black Publications search bar
+    - Sildebar for Black Publications years 1859-2025
+    - Black Publications listing page to search Publication by state 
+      
 
 # How to Run:
 
