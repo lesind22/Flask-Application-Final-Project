@@ -1,4 +1,3 @@
-# Flask-Application-Final-Project
 # Simple Flask App with Leaftlet.js Visualization
 
 This is a simple Flask application that visualizes Black Publications in the United States from 1859-2025 using Leaflet.js.
