@@ -33,7 +33,7 @@ Open your browser and go to this link:
 	http://127.0.0.1:5000/
 ____________________________________
 
-#Files:
+# Files:
 - app.py: Main Flask application
 - templates folder: HTML files
 - Black_Publications.csv: Data file with Black Publications information
