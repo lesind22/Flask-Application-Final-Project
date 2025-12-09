@@ -1,4 +1,4 @@
-# Flask App with Leaftlet.js Visualization
+# Flask App with Leaflet.js Visualization
 
 This is a Flask application that visualizes Black Publications in the United States from 1859-2025 using Leaflet.js.
 
@@ -11,6 +11,11 @@ This is a Flask application that visualizes Black Publications in the United Sta
       
 
 # How to Run:
+Install Flask:
+
+	pip install -r requirements.txt
+
+
 Activate your virtual environment:
 
 	python3 -m venv venv
@@ -18,6 +23,18 @@ ____________________________________
 	source venv/bin/activate
 
 
-Install Flask via VSCode Terminal:
+Run the Application:
 
-	pip install -r requirements.txt
+	python app.py
+
+
+Open your browser and go to this link:
+
+	http://127.0.0.1:5000/
+____________________________________
+
+#Files:
+- app.py: Main Flask application
+- templates folder: HTML files
+- Black_Publications.csv: Data file with Black Publications information
+- requirements.txt: Python dependencies 
