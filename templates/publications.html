@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publications List - Black Publications</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1612;
+            color: #f0e6d2;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2a1f18 0%, #3a2820 100%);
+            padding: 1rem 2rem;
+            border-bottom: 3px solid #cc6633;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 { 
+            font-size: 1.8rem;
+            color: #f0e6d2;
+        }
+        
+        nav {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        nav a {
+            color: #d4a574;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #d4a574;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover {
+            background: #d4a574;
+            color: #1a1612;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #4a3830;
+            border-radius: 6px;
+            background: rgba(42, 31, 24, 0.7);
+            color: #f0e6d2;
+            font-size: 1rem;
+        }
+        
+        .search-box input::placeholder {
+            color: #8b7a6a;
+        }
+        
+        .search-box input:focus {
+            outline: 2px solid #cc6633;
+            background: rgba(42, 31, 24, 0.9);
+        }
+        
+        .filter-box {
+            min-width: 150px;
+        }
+        
+        .filter-box select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #4a3830;
+            border-radius: 6px;
+            background: rgba(42, 31, 24, 0.7);
+            color: #f0e6d2;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .filter-box select:focus {
+            outline: 2px solid #cc6633;
+        }
+        
+        .stats-bar {
+            background: rgba(42, 31, 24, 0.7);
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 2rem;
+            border: 1px solid #4a3830;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #c9b59a;
+        }
+        
+        .stat-value {
+            color: #cc6633;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            background: rgba(42, 31, 24, 0.7);
+            border-radius: 8px;
+            border: 1px solid #4a3830;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #3a2820 0%, #2a1f18 100%);
+            position: sticky;
+            top: 0;
+        }
+        
+        th {
+            padding: 1rem;
+            text-align: left;
+            color: #d4a574;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            user-select: none;
+            border-bottom: 2px solid #4a3830;
+        }
+        
+        th:hover {
+            background: rgba(204, 102, 51, 0.2);
+        }
+        
+        th .sort-icon {
+            margin-left: 0.5rem;
+            opacity: 0.5;
+            color: #d4a574;
+        }
+        
+        th.sorted {
+            color: #cc6633;
+        }
+        
+        th.sorted .sort-icon {
+            opacity: 1;
+            color: #cc6633;
+        }
+        
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #4a3830;
+            vertical-align: top;
+            color: #f0e6d2;
+        }
+        
+        tr:hover {
+            background: rgba(58, 40, 32, 0.5);
+        }
+        
+        .title-cell {
+            color: #d4a574;
+            font-weight: 600;
+        }
+        
+        .location-cell {
+            white-space: nowrap;
+            color: #c9b59a;
+        }
+        
+        .time-cell {
+            whitespace: nowrap;
+            color: #cc6633;
+            font-weight: 500;
+        }
+        
+        .empty-cell {
+            color: #6b5d4f;
+            font-style: italic;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #c9b59a;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .pagination button {
+            padding: 0.5rem 1rem;
+            background: rgba(42, 31, 24, 0.7);
+            border: 1px solid #d4a574;
+            color: #f0e6d2;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: #cc6633;
+            color: #fff;
+            border-color: #cc6633;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .pagination span {
+            color: #c9b59a;
+            font-weight: 500;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 22, 18, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #2a1f18 0%, #3a2820 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            border: 2px solid #cc6633;
+            box-shadow: 0 20px 60px rgba(204, 102, 51, 0.3);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(204, 102, 51, 0.2);
+            border: 1px solid #cc6633;
+            color: #cc6633;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            background: #cc6633;
+            color: #fff;
+        }
+        
+        .modal h2 {
+            color: #d4a574;
+            margin-bottom: 1.5rem;
+            padding-right: 2rem;
+            font-size: 1.5rem;
+        }
+        
+        .modal-row {
+            display: flex;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #4a3830;
+        }
+        
+        .modal-row:last-child {
+            border: none;
+        }
+        
+        .modal-label {
+            width: 140px;
+            color: #c9b59a;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+        
+        .modal-value {
+            color: #f0e6d2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Publications List</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/map">Map View</a>
+            <a href="/digitized">Digitized</a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search publications...">
+            </div>
+            <div class="filter-box">
+                <select id="state-filter">
+                    <option value="">All States</option>
+                </select>
+            </div>
+            <div class="filter-box">
+                <select id="frequency-filter">
+                    <option value="">All Frequencies</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="stats-bar">
+            <div class="stat">
+                <span>Showing:</span>
+                <span class="stat-value" id="showing-count">0</span>
+            </div>
+            <div class="stat">
+                <span>Total:</span>
+                <span class="stat-value" id="total-count">0</span>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th data-sort="title">Publication_Title <span class="sort-icon">↕</span></th>
+                        <th data-sort="company">Publishing_Company <span class="sort-icon">↕</span></th>
+                        <th data-sort="publisher">Publisher's_Name <span class="sort-icon">↕</span></th>
+                        <th data-sort="city">Location <span class="sort-icon">↕</span></th>
+                        <th data-sort="editor">Editor(s) <span class="sort-icon">↕</span></th>
+                        <th data-sort="audience">Audience <span class="sort-icon">↕</span></th>
+                        <th data-sort="frequency">Frequency <span class="sort-icon">↕</span></th>
+                        <th data-sort="volume">Vol/Issue <span class="sort-icon">↕</span></th>
+                        <th data-sort="start_year">Time_Period <span class="sort-icon">↕</span></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="9" class="no-results">Loading publications...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="pagination">
+            <button id="prev-btn">← Previous</button>
+            <span id="page-info">Page 1 of 1</span>
+            <button id="next-btn">Next →</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="detail-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <h2 id="modal-title"></h2>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+    
+    <script>
+        let publications = [];
+        let filteredPubs = [];
+        let currentPage = 1;
+        const perPage = 25;
+        let sortColumn = 'title';
+        let sortDirection = 'asc';
+        
+        async function loadPublications() {
+            try {
+                console.log('Fetching publications...');
+                const response = await fetch('/api/publications');
+                const data = await response.json();
+                
+                console.log('Received publications:', data.length);
+                console.log('First publication:', data[0]);
+                
+                publications = data;
+                document.getElementById('total-count').textContent = publications.length;
+                
+                populateFilters();
+                applyFilters();
+            } catch (error) {
+                console.error('Error loading publications:', error);
+                document.getElementById('table-body').innerHTML = 
+                    '<tr><td colspan="9" class="no-results">Error loading publications. Check console for details.</td></tr>';
+            }
+        }
+        
+        function populateFilters() {
+            const states = [...new Set(publications.map(p => p.state).filter(Boolean))].sort();
+            const frequencies = [...new Set(publications.map(p => p.frequency).filter(Boolean))].sort();
+            
+            const stateSelect = document.getElementById('state-filter');
+            states.forEach(state => {
+                const opt = document.createElement('option');
+                opt.value = state;
+                opt.textContent = state;
+                stateSelect.appendChild(opt);
+            });
+            
+            const freqSelect = document.getElementById('frequency-filter');
+            frequencies.forEach(freq => {
+                const opt = document.createElement('option');
+                opt.value = freq;
+                opt.textContent = freq;
+                freqSelect.appendChild(opt);
+            });
+        }
+        
+        function applyFilters() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const stateFilter = document.getElementById('state-filter').value;
+            const freqFilter = document.getElementById('frequency-filter').value;
+            
+            filteredPubs = publications.filter(pub => {
+                const matchSearch = !search || 
+                    (pub.title && pub.title.toLowerCase().includes(search)) ||
+                    (pub.company && pub.company.toLowerCase().includes(search)) ||
+                    (pub.publisher && pub.publisher.toLowerCase().includes(search)) ||
+                    (pub.editor && pub.editor.toLowerCase().includes(search)) ||
+                    (pub.city && pub.city.toLowerCase().includes(search));
+                
+                const matchState = !stateFilter || pub.state === stateFilter;
+                const matchFreq = !freqFilter || pub.frequency === freqFilter;
+                
+                return matchSearch && matchState && matchFreq;
+            });
+            
+            sortPublications();
+            currentPage = 1;
+            renderTable();
+        }
+        
+        function sortPublications() {
+            filteredPubs.sort((a, b) => {
+                let valA = a[sortColumn] || '';
+                let valB = b[sortColumn] || '';
+                
+                if (sortColumn === 'start_year') {
+                    valA = a.start_year || 9999;
+                    valB = b.start_year || 9999;
+                }
+                
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+                
+                if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+                if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            const start = (currentPage - 1) * perPage;
+            const end = start + perPage;
+            const pagePubs = filteredPubs.slice(start, end);
+            
+            document.getElementById('showing-count').textContent = filteredPubs.length;
+            
+            if (pagePubs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="no-results">No publications found.</td></tr>';
+                return;
+            }
+            
+            // Build table rows
+            const rows = pagePubs.map((pub, idx) => {
+                const titleDisplay = pub.title ? pub.title : '<span class="empty-cell">—</span>';
+                const companyDisplay = pub.company ? pub.company : '<span class="empty-cell">—</span>';
+                const publisherDisplay = pub.publisher ? pub.publisher : '<span class="empty-cell">—</span>';
+                const locationDisplay = (pub.city && pub.state) ? `${pub.city}, ${pub.state}` : '<span class="empty-cell">—</span>';
+                const editorDisplay = pub.editor ? pub.editor : '<span class="empty-cell">—</span>';
+                const audienceDisplay = pub.audience ? pub.audience : '<span class="empty-cell">—</span>';
+                const frequencyDisplay = pub.frequency ? pub.frequency : '<span class="empty-cell">—</span>';
+                const volumeDisplay = (pub.volume || pub.issue) ? `Vol. ${pub.volume || '?'}, No. ${pub.issue || '?'}` : '<span class="empty-cell">—</span>';
+                const timeDisplay = pub.start_year ? `${pub.start_year}–${pub.end_year || 'Present'}` : '<span class="empty-cell">—</span>';
+                
+                return `
+                    <tr onclick="showDetail(${start + idx})" style="cursor:pointer;">
+                        <td class="title-cell">${titleDisplay}</td>
+                        <td>${companyDisplay}</td>
+                        <td>${publisherDisplay}</td>
+                        <td class="location-cell">${locationDisplay}</td>
+                        <td>${editorDisplay}</td>
+                        <td>${audienceDisplay}</td>
+                        <td>${frequencyDisplay}</td>
+                        <td>${volumeDisplay}</td>
+                        <td class="time-cell">${timeDisplay}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = rows.join('');
+            updatePagination();
+        }
+        
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredPubs.length / perPage) || 1;
+            document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+        }
+        
+        function showDetail(index) {
+            const pub = filteredPubs[index];
+            document.getElementById('modal-title').textContent = pub.title || 'Untitled';
+            
+            const fields = [
+                { label: 'Publishing Company', value: pub.company },
+                { label: "Publisher's Name", value: pub.publisher },
+                { label: 'City', value: pub.city },
+                { label: 'State', value: pub.state },
+                { label: 'Editor(s)', value: pub.editor },
+                { label: 'Audience', value: pub.audience },
+                { label: 'Frequency', value: pub.frequency },
+                { label: 'Volume', value: pub.volume },
+                { label: 'Issue', value: pub.issue },
+                { label: 'Time Period', value: pub.start_year ? `${pub.start_year}–${pub.end_year || 'Present'}` : null }
+            ];
+            
+            document.getElementById('modal-body').innerHTML = fields.map(f => `
+                <div class="modal-row">
+                    <div class="modal-label">${f.label}</div>
+                    <div class="modal-value">${f.value || '—'}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('detail-modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('detail-modal').classList.remove('active');
+        }
+        
+        // Event listeners
+        document.getElementById('search-input').addEventListener('input', applyFilters);
+        document.getElementById('state-filter').addEventListener('change', applyFilters);
+        document.getElementById('frequency-filter').addEventListener('change', applyFilters);
+        
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentPage > 1) { currentPage--; renderTable(); }
+        });
+        
+        document.getElementById('next-btn').addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredPubs.length / perPage);
+            if (currentPage < totalPages) { currentPage++; renderTable(); }
+        });
+        
+        // Column sorting
+        document.querySelectorAll('th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const col = th.dataset.sort;
+                if (sortColumn === col) {
+                    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortColumn = col;
+                    sortDirection = 'asc';
+                }
+                
+                document.querySelectorAll('th').forEach(t => t.classList.remove('sorted'));
+                th.classList.add('sorted');
+                th.querySelector('.sort-icon').textContent = sortDirection === 'asc' ? '↑' : '↓';
+                
+                sortPublications();
+                renderTable();
+            });
+        });
+        
+        // Close modal on outside click
+        document.getElementById('detail-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'detail-modal') closeModal();
+        });
+        
+        // Load on page load
+        loadPublications();
+    </script>
+</body>
+</html> 

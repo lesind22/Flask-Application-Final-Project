@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Publications Map (1859-2025)</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1612;
+            color: #f0e6d2;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2a1f18 0%, #3a2820 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #cc6633;
+        }
+        
+        header h1 { 
+            font-size: 1.8rem; 
+            margin-bottom: 0.25rem;
+            color: #f0e6d2;
+        }
+        
+        header p { 
+            color: #c9b59a; 
+            font-size: 0.95rem;
+        }
+        
+        nav a {
+            color: #d4a574;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #d4a574;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover {
+            background: #d4a574;
+            color: #1a1612;
+        }
+        
+        .container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+        
+        #map {
+            flex: 1;
+            height: 100%;
+        }
+        
+        .sidebar {
+            width: 350px;
+            background: linear-gradient(180deg, #2a1f18 0%, #1a1612 100%);
+            padding: 1.5rem;
+            overflow-y: auto;
+            border-left: 1px solid #4a3830;
+        }
+        
+        .search-box {
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-box label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #d4a574;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #4a3830;
+            border-radius: 6px;
+            background: rgba(42, 31, 24, 0.7);
+            color: #f0e6d2;
+            font-size: 1rem;
+        }
+        
+        .search-box input::placeholder {
+            color: #8b7a6a;
+        }
+        
+        .search-box input:focus {
+            outline: 2px solid #cc6633;
+            background: rgba(42, 31, 24, 0.9);
+        }
+        
+        .controls {
+            margin-bottom: 1.5rem;
+        }
+        
+        .controls label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #d4a574;
+        }
+        
+        .year-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            color: #cc6633;
+            font-weight: 600;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 1rem;
+            accent-color: #cc6633;
+        }
+        
+        .controls p {
+            font-size: 0.85rem;
+            color: #c9b59a;
+        }
+        
+        .controls strong {
+            color: #cc6633;
+        }
+        
+        .stats {
+            background: rgba(42, 31, 24, 0.7);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #4a3830;
+        }
+        
+        .stats h3 {
+            margin-bottom: 0.75rem;
+            color: #d4a574;
+            font-size: 1.1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #4a3830;
+            color: #c9b59a;
+        }
+        
+        .stat-item:last-child { border: none; }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #cc6633;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #4a3830;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            color: #8b7a6a;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .tab-btn:hover {
+            color: #d4a574;
+        }
+        
+        .tab-btn.active {
+            color: #cc6633;
+            border-bottom: 2px solid #cc6633;
+            margin-bottom: -2px;
+        }
+        
+        .tab-content {
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-content h3 {
+            margin-bottom: 0.75rem;
+            color: #d4a574;
+        }
+        
+        .pub-item {
+            background: rgba(42, 31, 24, 0.7);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            border-left: 3px solid #cc6633;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pub-item:hover {
+            background: rgba(58, 40, 32, 0.9);
+            transform: translateX(3px);
+            border-left-color: #d4a574;
+        }
+        
+        .pub-item strong {
+            color: #f5ede0;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        .pub-item span {
+            font-size: 0.85rem;
+            color: #c9b59a;
+        }
+        
+        .index-letter {
+            background: linear-gradient(135deg, #cc6633 0%, #d4a574 100%);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            margin: 1rem 0 0.5rem 0;
+            border-radius: 4px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        /* Leaflet popup styling */
+        .leaflet-popup-content-wrapper {
+            background: linear-gradient(135deg, #2a1f18 0%, #3a2820 100%);
+            color: #f0e6d2;
+            border-radius: 8px;
+            min-width: 250px;
+            border: 2px solid #cc6633;
+        }
+        
+        .leaflet-popup-tip { 
+            background: #2a1f18;
+        }
+        
+        .popup-content h4 {
+            color: #d4a574;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #4a3830;
+            padding-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .popup-content p {
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+        }
+        
+        .popup-content .pub-count {
+            background: #cc6633;
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .popup-content .pub-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+        }
+        
+        .popup-content .pub-list-item {
+            padding: 0.5rem;
+            border-left: 2px solid #d4a574;
+            margin-bottom: 0.5rem;
+            background: rgba(26, 22, 18, 0.5);
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .popup-content .pub-list-item strong {
+            color: #f5ede0;
+            display: block;
+        }
+        
+        .popup-content .pub-list-item span {
+            font-size: 0.8rem;
+            color: #c9b59a;
+        }
+        
+        .no-results {
+            color: #8b7a6a;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        /* Custom scrollbar for sidebar */
+        .sidebar::-webkit-scrollbar,
+        .tab-content::-webkit-scrollbar,
+        .popup-content .pub-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track,
+        .tab-content::-webkit-scrollbar-track,
+        .popup-content .pub-list::-webkit-scrollbar-track {
+            background: rgba(42, 31, 24, 0.3);
+            border-radius: 4px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb,
+        .tab-content::-webkit-scrollbar-thumb,
+        .popup-content .pub-list::-webkit-scrollbar-thumb {
+            background: #cc6633;
+            border-radius: 4px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover,
+        .tab-content::-webkit-scrollbar-thumb:hover,
+        .popup-content .pub-list::-webkit-scrollbar-thumb:hover {
+            background: #d4a574;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>Black Publications in America</h1>
+            <p>Mapping the History of Black Press (1859–2025)</p>
+        </div>
+        <nav style="display: flex; gap: 0.75rem;">
+            <a href="/publications">Full List</a>
+            <a href="/digitized">Digitized</a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div id="map"></div>
+        
+        <div class="sidebar">
+            <!-- Search Box -->
+            <div class="search-box">
+                <label>Search Publications</label>
+                <input type="text" id="search-input" placeholder="Search by title, city, publisher...">
+            </div>
+            
+            <!-- Year Slider -->
+            <div class="controls">
+                <label>Filter by Time Period</label>
+                <div class="year-display">
+                    <span id="start-year">1859</span>
+                    <span>to</span>
+                    <span id="end-year">2025</span>
+                </div>
+                <input type="range" id="year-slider" min="1859" max="2025" value="2025">
+                <p>
+                    Showing publications active up to <strong id="slider-year">2025</strong>
+                </p>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="stats">
+                <h3>Statistics</h3>
+                <div class="stat-item">
+                    <span>Total Publications</span>
+                    <span class="stat-value" id="total-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Visible on Map</span>
+                    <span class="stat-value" id="visible-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Cities Represented</span>
+                    <span class="stat-value" id="city-count">0</span>
+                </div>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="visible">In View</button>
+                <button class="tab-btn" data-tab="index">Full Index</button>
+            </div>
+            
+            <!-- Tab: Publications in View -->
+            <div id="visible-tab" class="tab-content active">
+                <div id="publication-list"></div>
+            </div>
+            
+            <!-- Tab: Full Index -->
+            <div id="index-tab" class="tab-content">
+                <div id="full-index"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // Initialize map centered on the US
+        const map = L.map('map').setView([39.8283, -98.5795], 4);
+        
+        // Add tile layer with warm tones
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap contributors © CARTO',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Store for publications data and markers
+        let publications = [];
+        let markers = L.layerGroup().addTo(map);
+        let currentYear = 2025;
+        let searchTerm = '';
+        
+        // Fetch publications from Flask API
+        async function loadPublications() {
+            try {
+                const response = await fetch('/api/publications');
+                publications = await response.json();
+                document.getElementById('total-count').textContent = publications.length;
+                updateMap();
+                buildFullIndex();
+            } catch (error) {
+                console.error('Error loading publications:', error);
+            }
+        }
+        
+        // Filter publications based on year and search
+        function getFilteredPublications() {
+            return publications.filter(pub => {
+                // Year filter
+                const yearMatch = !pub.start_year || 
+                    (pub.start_year <= currentYear && 
+                    (pub.end_year >= currentYear || pub.end_year === null));
+                
+                // Search filter
+                let searchMatch = true;
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    searchMatch = (
+                        (pub.title && pub.title.toLowerCase().includes(term)) ||
+                        (pub.city && pub.city.toLowerCase().includes(term)) ||
+                        (pub.state && pub.state.toLowerCase().includes(term)) ||
+                        (pub.company && pub.company.toLowerCase().includes(term)) ||
+                        (pub.publisher && pub.publisher.toLowerCase().includes(term)) ||
+                        (pub.editor && pub.editor.toLowerCase().includes(term))
+                    );
+                }
+                
+                return yearMatch && searchMatch;
+            });
+        }
+        
+        // Update map based on filters
+        function updateMap() {
+            markers.clearLayers();
+            
+            const filtered = getFilteredPublications();
+            const visible = filtered.filter(pub => pub.lat && pub.lng);
+            
+            // Group publications by city/state
+            const cityGroups = {};
+            visible.forEach(pub => {
+                const key = `${pub.lat},${pub.lng}`;
+                if (!cityGroups[key]) {
+                    cityGroups[key] = {
+                        city: pub.city,
+                        state: pub.state,
+                        lat: pub.lat,
+                        lng: pub.lng,
+                        publications: []
+                    };
+                }
+                cityGroups[key].publications.push(pub);
+            });
+            
+            // Count unique cities
+            const cities = new Set(visible.map(p => `${p.city}, ${p.state}`));
+            
+            // Update stats
+            document.getElementById('visible-count').textContent = visible.length;
+            document.getElementById('city-count').textContent = cities.size;
+            document.getElementById('slider-year').textContent = currentYear;
+            
+            // Add markers for each city with copper color
+            Object.values(cityGroups).forEach(group => {
+                const size = Math.min(12 + group.publications.length * 2, 30);
+                
+                const cityIcon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="background:#cc6633; width:${size}px; height:${size}px; border-radius:50%; border:2px solid #d4a574; display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; font-weight:bold; box-shadow: 0 2px 8px rgba(204, 102, 51, 0.5);">${group.publications.length > 1 ? group.publications.length : ''}</div>`,
+                    iconSize: [size, size]
+                });
+                
+                const marker = L.marker([group.lat, group.lng], { icon: cityIcon });
+                
+                // Build popup content with all publications in this city
+                let pubListHtml = group.publications.map(pub => `
+                    <div class="pub-list-item">
+                        <strong>${pub.title}</strong>
+                        <span>${pub.start_year || '?'} - ${pub.end_year || 'Present'}</span>
+                        ${pub.frequency ? `<br><span>Frequency: ${pub.frequency}</span>` : ''}
+                    </div>
+                `).join('');
+                
+                const popupContent = `
+                    <div class="popup-content">
+                        <h4>${group.city}, ${group.state}</h4>
+                        <div class="pub-count">${group.publications.length} Publication${group.publications.length > 1 ? 's' : ''}</div>
+                        <div class="pub-list">
+                            ${pubListHtml}
+                        </div>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent, { maxHeight: 300 });
+                markers.addLayer(marker);
+            });
+            
+            // Update sidebar list
+            updatePublicationList(visible);
+        }
+        
+        // Update the sidebar publication list
+        function updatePublicationList(pubs) {
+            const list = document.getElementById('publication-list');
+            
+            if (pubs.length === 0) {
+                list.innerHTML = '<div class="no-results">No publications found.</div>';
+                return;
+            }
+            
+            let html = '';
+            pubs.slice(0, 50).forEach(pub => {
+                html += `
+                    <div class="pub-item" onclick="flyToPublication(${pub.lat}, ${pub.lng})">
+                        <strong>${pub.title}</strong>
+                        <span>${pub.city}, ${pub.state} • ${pub.start_year || '?'}-${pub.end_year || 'Present'}</span>
+                    </div>
+                `;
+            });
+            
+            if (pubs.length > 50) {
+                html += `<p style="color:#c9b59a; margin-top:0.5rem; text-align:center;">Showing 50 of ${pubs.length}</p>`;
+            }
+            
+            list.innerHTML = html;
+        }
+        
+        // Build full alphabetical index
+        function buildFullIndex() {
+            const index = document.getElementById('full-index');
+            
+            // Sort publications alphabetically
+            const sorted = [...publications].sort((a, b) => 
+                (a.title || '').localeCompare(b.title || '')
+            );
+            
+            // Group by first letter
+            const groups = {};
+            sorted.forEach(pub => {
+                const letter = (pub.title || '#').charAt(0).toUpperCase();
+                const key = /[A-Z]/.test(letter) ? letter : '#';
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(pub);
+            });
+            
+            let html = '';
+            Object.keys(groups).sort().forEach(letter => {
+                html += `<div class="index-letter">${letter}</div>`;
+                groups[letter].forEach(pub => {
+                    html += `
+                        <div class="pub-item" onclick="flyToPublication(${pub.lat}, ${pub.lng})">
+                            <strong>${pub.title}</strong>
+                            <span>${pub.city}, ${pub.state} • ${pub.start_year || '?'}-${pub.end_year || 'Present'}</span>
+                        </div>
+                    `;
+                });
+            });
+            
+            index.innerHTML = html;
+        }
+        
+        // Fly to publication on map
+        function flyToPublication(lat, lng) {
+            if (lat && lng) {
+                map.flyTo([lat, lng], 10, { duration: 1 });
+            }
+        }
+        
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                this.classList.add('active');
+                const tabId = this.dataset.tab === 'visible' ? 'visible-tab' : 'index-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Year slider event listener
+        document.getElementById('year-slider').addEventListener('input', function(e) {
+            currentYear = parseInt(e.target.value);
+            document.getElementById('end-year').textContent = currentYear;
+            updateMap();
+        });
+        
+        // Search input event listener
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            searchTerm = e.target.value;
+            updateMap();
+        });
+        
+        // Load data on page load
+        loadPublications();
+    </script>
+</body>
+</html>

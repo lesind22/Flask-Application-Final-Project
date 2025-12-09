@@ -1,0 +1,66 @@
+{
+  "Altanta, Georgia": {
+    "lat": null,
+    "lng": null
+  },
+  "Austin, Texas": {
+    "lat": 30.2711286,
+    "lng": -97.7436995
+  },
+  "Tuskegee, Alabama": {
+    "lat": 32.4240535,
+    "lng": -85.6908715
+  },
+  "San Francisco, California": {
+    "lat": 37.7792588,
+    "lng": -122.4193286
+  },
+  "D.C., Washington": {
+    "lat": 36.2988517,
+    "lng": -82.3591933
+  },
+  "Berkeley, California": {
+    "lat": 37.8708393,
+    "lng": -122.272863
+  },
+  "Chicago, Illinois": {
+    "lat": 41.8755616,
+    "lng": -87.6244212
+  },
+  "New York City, New York": {
+    "lat": 40.7127281,
+    "lng": -74.0060152
+  },
+  "Fayetteville, Arkansas": {
+    "lat": 36.0625843,
+    "lng": -94.1574328
+  },
+  "Cleveland, Ohio": {
+    "lat": 41.4996574,
+    "lng": -81.6936772
+  },
+  "Altanta; Chicago, Georgia; Illinois": {
+    "lat": null,
+    "lng": null
+  },
+  "Chicago;Los Angeles; Louisville, Illinois; California;Kentucky": {
+    "lat": null,
+    "lng": null
+  },
+  "Boston;New York City, Massachusetts": {
+    "lat": null,
+    "lng": null
+  },
+  "Athens, Georgia": {
+    "lat": 33.9597677,
+    "lng": -83.376398
+  },
+  "Harlem, New York": {
+    "lat": 40.8078578,
+    "lng": -73.9454671
+  },
+  "Boston; New York City, Massachusetts; New York": {
+    "lat": null,
+    "lng": null
+  }
+}
